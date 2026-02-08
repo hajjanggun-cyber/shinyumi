@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>테스트</title>
+    <script src="data.js?v=20260208"></script>
+</head>
+
+<body>
+    <h1>Data.js 로드 테스트</h1>
+    <div id="result"></div>
+
+    <script>
+        setTimeout(() => {
+            const resultDiv = document.getElementById('result');
+            if (typeof keywordData !== 'undefined') {
+                resultDiv.innerHTML = `
+                    <p style="color: green; font-size: 20px;">✅ 성공!</p>
+                    <p>keywordData 길이: ${keywordData.length}</p>
+                    <p>첫 번째 항목: ${keywordData[0]?.제목}</p>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <p style="color: red; font-size: 20px;">❌ 실패!</p>
+                    <p>keywordData가 로드되지 않았습니다.</p>
+                `;
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>
