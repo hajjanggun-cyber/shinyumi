@@ -197,7 +197,6 @@ def main() -> None:
         print(f"  네이버 뉴스 수집 중...")
         naver_section_map = {
             "정치": "100", "경제": "101", "사회": "102", 
-            "이슈": "104", # 세계/이슈
             "장년": "103", # 생활/문화
         }
         sid1 = naver_section_map.get(selected_category, "100")
