@@ -5,6 +5,7 @@
 import os
 import re
 import subprocess
+import difflib
 from datetime import datetime
 
 # .env 로드 (프로젝트 루트 기준)
@@ -52,10 +53,14 @@ def _title_words(title: str) -> set:
     return set(w for w in words if len(w) >= 2)
 
 
-def _is_similar(title1: str, title2: str, min_common: int = 2) -> bool:
-    """두 제목이 비슷한지 (공통 단어 2개 이상)."""
-    w1, w2 = _title_words(title1), _title_words(title2)
-    return len(w1 & w2) >= min_common
+def _is_similar(title1: str, title2: str) -> bool:
+    """두 제목이 비슷한지 (difflib 사용, 50% 이상 유사)."""
+    if not title1 or not title2:
+        return False
+    # 간단한 정규화 (공백 제거 등)
+    t1 = re.sub(r"\s+", "", str(title1))
+    t2 = re.sub(r"\s+", "", str(title2))
+    return difflib.SequenceMatcher(None, t1, t2).ratio() >= 0.5
 
 
 def _enrich_with_similar_news(df: pd.DataFrame, all_news: list) -> pd.DataFrame:
@@ -139,7 +144,7 @@ def main() -> None:
     except Exception as e:
         err_msg = str(e)
         print(f"    → 건너뜀 (오류: {err_msg})")
-        scraper_status["youtube"] = f"오류: {err_msg}"
+        scraper_status["youtube"] = "수집 불가 (API 오류 등)"
 
     # 2. 구글 뉴스
     try:
@@ -154,7 +159,7 @@ def main() -> None:
     except Exception as e:
         err_msg = str(e)
         print(f"    → 건너뜀 (오류: {err_msg})")
-        scraper_status["google"] = f"오류: {err_msg}"
+        scraper_status["google"] = "수집 불가"
 
     # 3. 네이버 뉴스
     try:
@@ -177,7 +182,7 @@ def main() -> None:
     except Exception as e:
         err_msg = str(e)
         print(f"    → 건너뜀 (오류: {err_msg})")
-        scraper_status["naver"] = f"오류: {err_msg}"
+        scraper_status["naver"] = "수집 불가"
 
     if not all_items:
         print("수집된 데이터가 없습니다. .env에 YOUTUBE_API_KEY를 확인하고, feedparser를 설치했는지 확인하세요.")

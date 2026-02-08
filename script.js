@@ -41,8 +41,32 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 overlay.style.display = 'none';
                 content.style.display = 'block';
+                backBtn.style.display = 'block'; // Show back button
             }, 300);
         });
+    }
+
+    // Create 'Back to Search' button dynamically
+    const backBtn = document.createElement('button');
+    backBtn.id = 'back-btn';
+    backBtn.textContent = '처음으로';
+    backBtn.style.cssText = 'display: none; margin: 0 auto 20px; padding: 10px 20px; font-size: 16px; background: #666; color: white; border: none; border-radius: 5px; cursor: pointer;';
+    backBtn.addEventListener('click', () => {
+        // Reset UI
+        content.style.display = 'none';
+        backBtn.style.display = 'none';
+        overlay.style.display = 'flex';
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+        }, 10);
+    });
+
+    // Insert back button before table
+    const tableContainer = document.querySelector('.table-container');
+    if (tableContainer) {
+        content.insertBefore(backBtn, tableContainer);
+    } else {
+        content.insertBefore(backBtn, content.firstChild);
     }
 
     // Helper: Parse date string "YYYY-MM-DD" or "2024-02-01 ..."
