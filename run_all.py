@@ -207,7 +207,7 @@ def main() -> None:
         scored_yt = analyze_articles(yt, title_key="title")
         for item in scored_yt:
             row = _to_row(item, "유튜브")
-            row["category"] = selected_category
+            row["카테고리"] = selected_category
             all_items.append(row)
         print(f"    → {len(scored_yt)}건")
     except Exception as e:
@@ -228,7 +228,7 @@ def main() -> None:
         scored_google = analyze_articles(google, title_key="title")
         for item in scored_google:
             row = _to_row(item, "구글뉴스")
-            row["category"] = selected_category
+            row["카테고리"] = selected_category
             all_items.append(row)
         print(f"    → {len(scored_google)}건")
     except Exception as e:
@@ -256,7 +256,7 @@ def main() -> None:
         scored_naver = analyze_articles(naver, title_key="title")
         for item in scored_naver:
             row = _to_row(item, "네이버뉴스")
-            row["category"] = selected_category
+            row["카테고리"] = selected_category
             all_items.append(row)
         print(f"    → {len(scored_naver)}건")
     except Exception as e:
