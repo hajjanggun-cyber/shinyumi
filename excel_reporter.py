@@ -5,6 +5,7 @@
 
 import os
 import re
+import json
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 from typing import Optional
@@ -178,7 +179,7 @@ def export_to_excel(
 
     Args:
         df: 수집·분석된 데이터 (제목, 추천점수, 출처, URL 등 포함)
-        output_path: 저장 경로. None이면 자동 생성 (agro_report_MMDD.xlsx, 중복 시 (1),(2)...)
+        output_path: 저장 경로. None이면 자동 생성 (agro_report_MMDD(1).xlsx, (2).xlsx, ...)
         score_column: 정렬에 사용할 점수 컬럼명
         ascending: False=높은순, True=낮은순
 
@@ -213,16 +214,16 @@ def export_to_excel(
             if col in out.columns:
                 out[col] = out[col].apply(_normalize_date)
 
-        # 출력 경로 결정: xlsx/ 폴더에 agro_report_MMDD.xlsx (중복 시 (1),(2)...)
+        # 출력 경로 결정: xlsx/ 폴더에 agro_report_MMDD(1).xlsx, (2).xlsx, ... 순서
         if not output_path:
             output_dir = "xlsx"
             os.makedirs(output_dir, exist_ok=True)
             base = f"agro_report_{datetime.now().strftime('%m%d')}"
-            output_path = os.path.join(output_dir, f"{base}.xlsx")
             n = 1
+            output_path = os.path.join(output_dir, f"{base}({n}).xlsx")
             while os.path.exists(output_path):
-                output_path = os.path.join(output_dir, f"{base}({n}).xlsx")
                 n += 1
+                output_path = os.path.join(output_dir, f"{base}({n}).xlsx")
 
         output_path = os.path.abspath(output_path)
         os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
@@ -238,7 +239,67 @@ def export_to_excel(
 
         return output_path
 
+        return output_path
+
     except ValueError as e:
         raise e
     except Exception as e:
         raise RuntimeError(f"엑셀 저장 실패: {e}") from e
+
+
+def export_to_json(
+    df: pd.DataFrame,
+    output_path: Optional[str] = None,
+    score_column: str = "추천점수",
+    ascending: bool = False,
+) -> str:
+    """
+    DataFrame을 웹용 JSON 파일로 저장합니다.
+    """
+    try:
+        if df.empty:
+            return ""
+
+        # 점수 컬럼 통일
+        if "추천점수" not in df.columns and score_column in df.columns:
+            df = df.copy()
+            df["추천점수"] = df[score_column]
+
+        # 컬럼 정규화
+        out = _ensure_columns(df)
+
+        # 추천점수 기준 정렬
+        try:
+            out["추천점수"] = pd.to_numeric(out["추천점수"], errors="coerce").fillna(0)
+        except Exception:
+            pass
+        out = out.sort_values(by="추천점수", ascending=ascending)
+
+        # 1~30위만 선택
+        out = out.head(TOP_N).reset_index(drop=True)
+        out.insert(0, "순위", list(range(1, len(out) + 1)))
+
+        # 날짜 정규화
+        for col in ("업로드일", "뉴스기사2_날짜", "뉴스기사3_날짜"):
+            if col in out.columns:
+                out[col] = out[col].apply(_normalize_date)
+
+        # 저장 경로: web/data.json
+        if not output_path:
+            output_dir = "web"
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, "data.json")
+
+        output_path = os.path.abspath(output_path)
+        os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+
+        # JSON 저장
+        data = out.to_dict(orient="records")
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+        return output_path
+
+    except Exception as e:
+        print(f"[오류] JSON 저장 실패: {e}")
+        return ""

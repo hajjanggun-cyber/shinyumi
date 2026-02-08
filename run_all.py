@@ -16,7 +16,7 @@ except ImportError:
 import pandas as pd
 
 from aggro_analyzer import analyze_articles
-from excel_reporter import export_to_excel
+from excel_reporter import export_to_excel, export_to_json
 from google_news_scraper import scrape_google_news
 from naver_news_scraper import scrape_ranking_news
 from youtube_scraper import scrape_youtube
@@ -141,9 +141,13 @@ def main() -> None:
     df_top = df.head(30).copy()
     df_top = _enrich_with_similar_news(df_top, all_items)
 
-    # 6. 엑셀 출력
+    # 6. 엑셀 출력 & 웹용 JSON 출력
     path = export_to_excel(df_top)
     print(f"\n엑셀 파일 생성 완료: {path}")
+
+    json_path = export_to_json(df_top)
+    print(f"웹 데이터 파일 생성 완료: {json_path}")
+    
     print(f"총 {len(df_top)}건 (유튜브·구글·네이버 통합)")
 
 
