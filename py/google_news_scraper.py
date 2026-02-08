@@ -36,25 +36,22 @@ def _fetch_rss(query: str, max_results: int = 15) -> List[dict]:
         return []
 
     url = f"{RSS_BASE}?q={quote_plus(query)}&hl=ko&gl=KR&ceid=KR:ko"
-    try:
-        feed = feedparser.parse(url, request_headers={"User-Agent": "Mozilla/5.0"})
-        results = []
-        for entry in feed.get("entries", [])[:max_results]:
-            title = (entry.get("title") or "").strip()
-            link = entry.get("link") or entry.get("id", "")
-            pub_parsed = entry.get("published_parsed")
-            published = time.strftime("%Y-%m-%d", pub_parsed) if pub_parsed else ""
-            if title and len(title) > 3:
-                results.append({
-                    "title": title,
-                    "url": link,
-                    "source": "구글뉴스",
-                    "views": "",
-                    "upload_date": published,
-                })
-        return results
-    except Exception:
-        return []
+    feed = feedparser.parse(url, request_headers={"User-Agent": "Mozilla/5.0"})
+    results = []
+    for entry in feed.get("entries", [])[:max_results]:
+        title = (entry.get("title") or "").strip()
+        link = entry.get("link") or entry.get("id", "")
+        pub_parsed = entry.get("published_parsed")
+        published = time.strftime("%Y-%m-%d", pub_parsed) if pub_parsed else ""
+        if title and len(title) > 3:
+            results.append({
+                "title": title,
+                "url": link,
+                "source": "구글뉴스",
+                "views": "",
+                "upload_date": published,
+            })
+    return results
 
 
 def _fetch_newsapi(api_key: str, query: str, max_results: int = 10) -> List[dict]:
@@ -67,28 +64,25 @@ def _fetch_newsapi(api_key: str, query: str, max_results: int = 10) -> List[dict
         "sortBy": "publishedAt",
         "pageSize": min(max_results, 100),
     }
-    try:
-        resp = requests.get(NEWSAPI_URL, params=params, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        if data.get("status") != "ok":
-            return []
-        results = []
-        for article in data.get("articles", []):
-            title = (article.get("title") or "").strip()
-            url = article.get("url", "")
-            published = (article.get("publishedAt") or "")[:10]
-            if title and url:
-                results.append({
-                    "title": title,
-                    "url": url,
-                    "source": "구글뉴스",
-                    "views": "",
-                    "upload_date": published,
-                })
-        return results
-    except Exception:
+    resp = requests.get(NEWSAPI_URL, params=params, timeout=15)
+    resp.raise_for_status()
+    data = resp.json()
+    if data.get("status") != "ok":
         return []
+    results = []
+    for article in data.get("articles", []):
+        title = (article.get("title") or "").strip()
+        url = article.get("url", "")
+        published = (article.get("publishedAt") or "")[:10]
+        if title and url:
+            results.append({
+                "title": title,
+                "url": url,
+                "source": "구글뉴스",
+                "views": "",
+                "upload_date": published,
+            })
+    return results
 
 
 def scrape_google_news(max_per_query: int = 10, max_total: int = 50, query_list: List[str] = None) -> List[dict]:

@@ -149,44 +149,41 @@ def scrape_ranking_news(
     results = []
 
     # 1. 스크래핑 (가장 많이 본 뉴스) - 항상
-    try:
-        if sid1:
-            # 특정 섹션 지정 시
-            html = _fetch_ranking_page(int(sid1))
-            # 수집 개수는 total_limit 만큼 (경제+사회 나누지 않음)
-            count = total_limit
-            # 섹션 이름 매핑 (단순화)
-            section_name = "경제" if str(sid1) == "101" else "사회" if str(sid1) == "102" else "기타"
-            
-            for item in _extract_from_html(html, count):
-                item["section"] = section_name
+    if sid1:
+        # 특정 섹션 지정 시
+        html = _fetch_ranking_page(int(sid1))
+        # 수집 개수는 total_limit 만큼 (경제+사회 나누지 않음)
+        count = total_limit
+        # 섹션 이름 매핑 (단순화)
+        section_name = "경제" if str(sid1) == "101" else "사회" if str(sid1) == "102" else "기타"
+        
+        for item in _extract_from_html(html, count):
+            item["section"] = section_name
+            if item["url"] not in seen_urls:
+                seen_urls.add(item["url"])
+                results.append(item)
+            if len(results) >= total_limit:
+                break
+    else:
+        # 기본 동작 (경제+사회 병행)
+        html_econ = _fetch_ranking_page(SECTION_ECONOMY)
+        for item in _extract_from_html(html_econ, economy_count):
+            item["section"] = "경제"
+            if item["url"] not in seen_urls:
+                seen_urls.add(item["url"])
+                results.append(item)
+            if len(results) >= total_limit:
+                return results[:total_limit] # 여기서 break 하면 아래 함수 종료되므로 return이 나을 수도, 일단 로직 유지
+
+        if len(results) < total_limit:
+            html_soc = _fetch_ranking_page(SECTION_SOCIETY)
+            for item in _extract_from_html(html_soc, society_count):
+                item["section"] = "사회"
                 if item["url"] not in seen_urls:
                     seen_urls.add(item["url"])
                     results.append(item)
                 if len(results) >= total_limit:
                     break
-        else:
-            # 기본 동작 (경제+사회 병행)
-            html_econ = _fetch_ranking_page(SECTION_ECONOMY)
-            for item in _extract_from_html(html_econ, economy_count):
-                item["section"] = "경제"
-                if item["url"] not in seen_urls:
-                    seen_urls.add(item["url"])
-                    results.append(item)
-                if len(results) >= total_limit:
-                    return results[:total_limit] # 여기서 break 하면 아래 함수 종료되므로 return이 나을 수도, 일단 로직 유지
-
-            if len(results) < total_limit:
-                html_soc = _fetch_ranking_page(SECTION_SOCIETY)
-                for item in _extract_from_html(html_soc, society_count):
-                    item["section"] = "사회"
-                    if item["url"] not in seen_urls:
-                        seen_urls.add(item["url"])
-                        results.append(item)
-                    if len(results) >= total_limit:
-                        break
-    except Exception as e:
-        print(f"[네이버] 스크래핑 오류: {e}")
 
     # 2. API (키 있으면 추가)
     client_id = (os.getenv("NAVER_CLIENT_ID") or "").strip()

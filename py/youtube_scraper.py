@@ -54,18 +54,14 @@ def _search_youtube(api_key: str, query: str, max_results: int = 10) -> List[dic
         "relevanceLanguage": "ko",
         "key": api_key,
     }
-    try:
-        resp = requests.get(url, params=params, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        items = data.get("items", [])
-        video_ids = [i["id"]["videoId"] for i in items if i.get("id", {}).get("videoId")]
-        if not video_ids:
-            return []
-        return _get_video_details(api_key, video_ids)
-    except requests.RequestException as e:
-        print(f"[유튜브] 검색 오류 (query={query}): {e}")
+    resp = requests.get(url, params=params, timeout=15)
+    resp.raise_for_status()
+    data = resp.json()
+    items = data.get("items", [])
+    video_ids = [i["id"]["videoId"] for i in items if i.get("id", {}).get("videoId")]
+    if not video_ids:
         return []
+    return _get_video_details(api_key, video_ids)
 
 
 def _get_video_details(api_key: str, video_ids: List[str]) -> List[dict]:
