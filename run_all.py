@@ -110,7 +110,7 @@ def _load_existing_data() -> list:
     try:
         # 프로젝트 루트 기준 data.js (현재 파일이 루트에 있음)
         root_dir = os.path.dirname(os.path.abspath(__file__))
-        data_path = os.path.join(root_dir, "data.js")
+        data_path = os.path.join(root_dir, "web", "data.js")
         
         if not os.path.exists(data_path):
             return []
@@ -166,7 +166,7 @@ def main() -> None:
     """유튜브·구글·네이버 수집 → 어그로 점수 → 엑셀 1개 파일."""
     all_items = []
 
-    from keyword_dict import SEARCH_TOPICS, AGGRO_DICTIONARY
+    from aggro_keywords import SEARCH_TOPICS, AGGRO_DICTIONARY
     
     
     # 스크래퍼 상태 추적

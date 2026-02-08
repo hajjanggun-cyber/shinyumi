@@ -147,6 +147,7 @@
         const App = () => {
             const [category, setCategory] = useState('정치');
             const [period, setPeriod] = useState('today');
+            const [isSearched, setIsSearched] = useState(false);
 
             const filteredData = useMemo(() => {
                 if (!window.keywordData) return [];
@@ -157,45 +158,78 @@
                     .sort((a, b) => b.추천점수 - a.추천점수);
             }, [category, period]);
 
+            const handleSearch = () => {
+                setIsSearched(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleBack = () => {
+                setIsSearched(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
             return (
                 <div className="app">
                     <header className="app-header">
                         <div className="header-content">
-                            <div className="logo-section">
+                            <div className="logo-section" onClick={handleBack} style={{ cursor: 'pointer' }}>
                                 <div className="logo-icon">🔥</div>
                                 <div>
                                     <h1 className="app-title">하소장의 실시간 이슈 검색</h1>
                                     <p className="app-subtitle">AI 기반 키워드 분석 시스템</p>
                                 </div>
                             </div>
-                            <div className="stats-badge">
-                                <span className="stats-number">{filteredData.length}</span>
-                                <span className="stats-label">개 이슈</span>
-                            </div>
+                            {isSearched && (
+                                <div className="stats-badge">
+                                    <span className="stats-number">{filteredData.length}</span>
+                                    <span className="stats-label">개 이슈 탐지</span>
+                                </div>
+                            )}
                         </div>
                     </header>
 
                     <main className="app-main">
-                        <FilterPanel
-                            category={category}
-                            setCategory={setCategory}
-                            period={period}
-                            setPeriod={setPeriod}
-                        />
-
-                        <div className="news-grid">
-                            {filteredData.length > 0 ? (
-                                filteredData.map((item, index) => (
-                                    <NewsCard key={index} item={item} index={index} />
-                                ))
-                            ) : (
-                                <div className="empty-state">
-                                    <div className="empty-icon">📭</div>
-                                    <h3>해당 기간에 뉴스가 없습니다</h3>
-                                    <p>다른 기간을 선택해보세요</p>
+                        {!isSearched ? (
+                            <div className="search-view">
+                                <FilterPanel
+                                    category={category}
+                                    setCategory={setCategory}
+                                    period={period}
+                                    setPeriod={setPeriod}
+                                />
+                                <div className="search-section">
+                                    <button className="search-btn" onClick={handleSearch}>
+                                        이슈 분석 시작 🔥
+                                    </button>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="results-view">
+                                <div className="results-toolbar">
+                                    <button className="back-btn" onClick={handleBack}>
+                                        <span>←</span> 다시 선택하기
+                                    </button>
+                                    <div className="results-summary">
+                                        <span className="summary-tag">#{category}</span>
+                                        <span className="summary-tag">#{period === 'today' ? '오늘' : period === '3days' ? '3일' : period === '1week' ? '1주일' : '1개월'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="news-grid">
+                                    {filteredData.length > 0 ? (
+                                        filteredData.map((item, index) => (
+                                            <NewsCard key={index} item={item} index={index} />
+                                        ))
+                                    ) : (
+                                        <div className="empty-state">
+                                            <div className="empty-icon">📭</div>
+                                            <h3>해당 기간에 뉴스가 없습니다</h3>
+                                            <p>다른 기간이나 카테고리를 선택해보세요</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </main>
 
                     <footer className="app-footer">

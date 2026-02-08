@@ -85,6 +85,12 @@ body::before {
     display: flex;
     align-items: center;
     gap: 20px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.logo-section:hover {
+    transform: scale(1.02);
+    opacity: 0.9;
 }
 
 .logo-icon {
@@ -226,27 +232,75 @@ body::before {
     transform: translateY(-1px);
 }
 
-/* ===== 검색 프롬프트 ===== */
-.search-prompt {
-    text-align: center;
-    padding: 100px 20px;
-    background: var(--bg-card);
-    backdrop-filter: blur(20px);
+/* ===== 검색 뷰 ===== */
+.search-view {
+    padding: 40px 0;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ===== 결과 툴바 ===== */
+.results-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 10px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
-    margin-top: 30px;
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
 }
 
-.prompt-icon {
-    font-size: 5rem;
-    margin-bottom: 20px;
-    opacity: 0.6;
-    animation: pulse 2s ease-in-out infinite;
+.back-btn span {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
 }
 
-.search-prompt h3 {
-    font-size: 1.3rem;
-    color: var(--text-secondary);
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-blue);
+    transform: translateX(-5px);
+}
+
+.back-btn:hover span {
+    transform: translateX(-3px);
+}
+
+.results-summary {
+    display: flex;
+    gap: 12px;
+}
+
+.summary-tag {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-blue);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 

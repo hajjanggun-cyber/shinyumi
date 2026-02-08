@@ -355,7 +355,7 @@ def export_to_js(
         if not output_path:
             # 프로젝트 루트 기준 data.js
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            output_path = os.path.join(base_dir, "data.js")
+            output_path = os.path.join(base_dir, "web", "data.js")
 
         output_path = os.path.abspath(output_path)
         os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)

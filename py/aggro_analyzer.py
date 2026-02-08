@@ -5,7 +5,7 @@
 
 from typing import List, Tuple
 
-from keyword_dict import AGGRO_DICTIONARY
+from aggro_keywords import AGGRO_DICTIONARY
 
 
 def calculate_aggro_score(title: str) -> Tuple[float, List[str]]:
