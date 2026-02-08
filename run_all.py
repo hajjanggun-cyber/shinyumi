@@ -149,12 +149,10 @@ def main() -> None:
         choice = int(input("\n번호를 입력하세요: "))
         if 1 <= choice <= len(topics):
             selected_category = topics[choice - 1]
-            if selected_category == "정치":
-                selected_keywords = SEARCH_TOPICS[selected_category]
-            else:
-                # 정치 외 카테고리는 해당 분야 '뉴스' 자체를 검색 (상위 기사 노출 유도)
-                # 예: "경제" -> ["경제", "경제 뉴스"]
-                selected_keywords = [selected_category, f"{selected_category} 뉴스"]
+            # 기본적으로 사전(dictionary)에 있는 키워드 우선 사용
+            # + '뉴스' 키워드도 추가해서 포괄적 수집
+            base_keywords = SEARCH_TOPICS.get(selected_category, [])
+            selected_keywords = base_keywords + [selected_category, f"{selected_category} 뉴스"]
         else:
             print("잘못된 번호입니다. 프로그램을 종료합니다.")
             return
