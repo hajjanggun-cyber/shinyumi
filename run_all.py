@@ -110,7 +110,7 @@ def _load_existing_data() -> list:
     try:
         # 프로젝트 루트 기준 data.js (현재 파일이 루트에 있음)
         root_dir = os.path.dirname(os.path.abspath(__file__))
-        data_path = os.path.join(root_dir, "web", "data.js")
+        data_path = os.path.join(root_dir, "data.js")
         
         if not os.path.exists(data_path):
             return []
