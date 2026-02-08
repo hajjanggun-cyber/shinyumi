@@ -216,7 +216,10 @@ def export_to_excel(
 
         # 출력 경로 결정: xlsx/ 폴더에 agro_report_MMDD(1).xlsx, (2).xlsx, ... 순서
         if not output_path:
-            output_dir = "xlsx"
+            # 프로젝트 루트 기준 xlsx 폴더
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            output_dir = os.path.join(base_dir, "xlsx")
+            
             os.makedirs(output_dir, exist_ok=True)
             base = f"agro_report_{datetime.now().strftime('%m%d')}"
             n = 1
@@ -302,4 +305,67 @@ def export_to_json(
 
     except Exception as e:
         print(f"[오류] JSON 저장 실패: {e}")
+        return ""
+
+
+def export_to_js(
+    df: pd.DataFrame,
+    output_path: Optional[str] = None,
+    score_column: str = "추천점수",
+    ascending: bool = False,
+) -> str:
+    """
+    DataFrame을 웹용 JS 파일로 저장합니다.
+    const keywordData = [...]; 형태로 저장되어
+    HTML에서 <script src="data.js"></script>로 불러올 수 있습니다.
+    """
+    try:
+        if df.empty:
+            return ""
+
+        # 점수 컬럼 통일
+        if "추천점수" not in df.columns and score_column in df.columns:
+            df = df.copy()
+            df["추천점수"] = df[score_column]
+
+        # 컬럼 정규화
+        out = _ensure_columns(df)
+
+        # 추천점수 기준 정렬
+        try:
+            out["추천점수"] = pd.to_numeric(out["추천점수"], errors="coerce").fillna(0)
+        except Exception:
+            pass
+        out = out.sort_values(by="추천점수", ascending=ascending)
+
+        # 1~30위만 선택
+        out = out.head(TOP_N).reset_index(drop=True)
+        out.insert(0, "순위", list(range(1, len(out) + 1)))
+
+        # 날짜 정규화
+        for col in ("업로드일", "뉴스기사2_날짜", "뉴스기사3_날짜"):
+            if col in out.columns:
+                out[col] = out[col].apply(_normalize_date)
+
+        # 저장 경로: ../data.js (루트)
+        if not output_path:
+            # 프로젝트 루트 기준 data.js
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            output_path = os.path.join(base_dir, "data.js")
+
+        output_path = os.path.abspath(output_path)
+        os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
+
+        # JS 저장
+        data = out.to_dict(orient="records")
+        json_str = json.dumps(data, ensure_ascii=False, indent=2)
+        js_content = f"const keywordData = {json_str};\n"
+
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(js_content)
+
+        return output_path
+
+    except Exception as e:
+        print(f"[오류] JS 저장 실패: {e}")
         return ""

@@ -8,7 +8,7 @@ import re
 # .env 로드 (프로젝트 루트 기준)
 try:
     from dotenv import load_dotenv
-    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
     load_dotenv(_env_path)
 except ImportError:
     pass
@@ -16,7 +16,7 @@ except ImportError:
 import pandas as pd
 
 from aggro_analyzer import analyze_articles
-from excel_reporter import export_to_excel, export_to_json
+from excel_reporter import export_to_excel, export_to_js
 from google_news_scraper import scrape_google_news
 from naver_news_scraper import scrape_ranking_news
 from youtube_scraper import scrape_youtube
@@ -145,7 +145,7 @@ def main() -> None:
     path = export_to_excel(df_top)
     print(f"\n엑셀 파일 생성 완료: {path}")
 
-    json_path = export_to_json(df_top)
+    json_path = export_to_js(df_top)
     print(f"웹 데이터 파일 생성 완료: {json_path}")
     
     print(f"총 {len(df_top)}건 (유튜브·구글·네이버 통합)")

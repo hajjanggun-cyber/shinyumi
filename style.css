@@ -1,0 +1,201 @@
+:root {
+    --bg-color: #ffffff;
+    --text-primary: #000000;
+    --border-color: #d0d7e5;
+    --header-bg: #f3f3f3;
+    --header-text: #333333;
+    --row-hover: #e8f0fe;
+    --link-color: #0563c1;
+    --rank-color: #e02d1b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    padding: 20px;
+}
+
+.table-container {
+    overflow-x: auto;
+    border: 1px solid #777;
+    /* Outer border like Excel window */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    min-width: 1000px;
+}
+
+th,
+td {
+    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 24px;
+    /* Excel default row height approx */
+}
+
+th {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    font-weight: normal;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid #b5b5b5;
+    /* Slightly thicker header bottom */
+}
+
+/* Rank Column - Centered */
+td.rank {
+    text-align: center;
+    background-color: #f3f3f3;
+    /* Excel row header style */
+    width: 40px;
+    font-weight: bold;
+}
+
+/* Title Column */
+td.title {
+    max-width: 400px;
+}
+
+/* Score Column - Right aligned or Center */
+td.score {
+    text-align: center;
+    width: 60px;
+}
+
+/* Keywords Column */
+td.keywords {
+    max-width: 150px;
+    color: #555;
+    text-align: center;
+}
+
+/* Source Column */
+td.source {
+    text-align: center;
+    width: 80px;
+}
+
+td.source span {
+    font-weight: bold;
+}
+
+.source-youtube {
+    color: #ff0000;
+}
+
+.source-news {
+    color: #1a0dab;
+}
+
+/* Links Column */
+td.links {
+    text-align: left;
+    max-width: 300px;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Date Column */
+td.date {
+    text-align: center;
+    width: 100px;
+    color: #333;
+}
+
+/* Row Hover Effect */
+tr:hover td {
+    background-color: var(--row-hover);
+    cursor: default;
+}
+
+/* Scrollbar to look more native/clean */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border: 3px solid #f1f1f1;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Landing Overlay */
+#landing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.landing-content {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.landing-content h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+#enter-btn {
+    padding: 12px 30px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#enter-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+#enter-btn:active {
+    transform: translateY(0);
+}
