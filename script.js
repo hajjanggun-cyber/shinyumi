@@ -11,15 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const content = document.getElementById('content');
     const tbody = document.querySelector('#keyword-table tbody');
 
-    // Handle Topic Selection (Immediate Search)
+    // Handle Topic Selection
     topicBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             topicBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentTopic = btn.dataset.value;
-
-            // Trigger Search Immediately
-            performSearch();
         });
     });
 
@@ -32,7 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Search Function
+    // Handle Search Click
+    // Search Function wrapped in event listener
+    if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+            performSearch();
+        });
+    }
+
     function performSearch() {
         // Filter Data
         const filteredData = filterData(currentTopic, currentPeriod);
