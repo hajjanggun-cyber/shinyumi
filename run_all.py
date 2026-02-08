@@ -7,12 +7,16 @@ import re
 import json
 import subprocess
 import difflib
+import sys
 from datetime import datetime
 
-# .env 로드 (프로젝트 루트 기준)
+# py 폴더를 모듈 경로에 추가
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "py"))
+
+# .env 로드 (현재 디렉토리 기준)
 try:
     from dotenv import load_dotenv
-    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
     load_dotenv(_env_path)
 except ImportError:
     pass
@@ -20,9 +24,7 @@ except ImportError:
 import pandas as pd
 
 from aggro_analyzer import analyze_articles
-from aggro_analyzer import analyze_articles
 from excel_reporter import export_to_js
-from google_news_scraper import scrape_google_news
 from google_news_scraper import scrape_google_news
 from naver_news_scraper import scrape_ranking_news
 from youtube_scraper import scrape_youtube
@@ -105,8 +107,8 @@ def _enrich_with_similar_news(df: pd.DataFrame, all_news: list) -> pd.DataFrame:
 def _load_existing_data() -> list:
     """기존 data.js에서 JSON 데이터 로드."""
     try:
-        # 프로젝트 루트 기준 data.js
-        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # 프로젝트 루트 기준 data.js (현재 파일이 루트에 있음)
+        root_dir = os.path.dirname(os.path.abspath(__file__))
         data_path = os.path.join(root_dir, "data.js")
         
         if not os.path.exists(data_path):
@@ -310,10 +312,8 @@ def git_push():
     """데이터 생성 후 깃허브에 자동 푸시"""
     print("\n[Git] 깃허브 자동 푸시 시작...")
     try:
-        # 프로젝트 루트로 이동 (현재 py/ 폴더에 있다면)
-        # run_all.py가 py/ 안에 있으므로, 부모 디렉토리가 루트
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        root_dir = os.path.dirname(script_dir)
+        # 프로젝트 루트로 이동 (현재 파일이 루트에 있음)
+        root_dir = os.path.dirname(os.path.abspath(__file__))
         
         # 1. git add
         subprocess.run(["git", "add", "."], cwd=root_dir, check=True)
